@@ -1,10 +1,15 @@
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {FavouriteProject} from "@/app/admin/dashboard/page";
 
-export default function ProjectTable() {
-  const [checkedItems, setCheckedItems] = useState<{ [key: number]: boolean }>(
-    {}
-  );
+interface FavouriteProjectProps {
+  projectData: FavouriteProject[];
+}
+
+
+const ProjectTable: React.FC<FavouriteProjectProps> = ({projectData}) => {
+  const [data, setData] = useState<FavouriteProject[]>(projectData);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
 
   interface CheckboxChangeEvent {
@@ -12,39 +17,36 @@ export default function ProjectTable() {
       checked: boolean;
     };
   }
-
+  
+  useEffect(() => {
+    console.log(checkedItems);
+  }, [checkedItems]);
   const handleCheckboxChange = (event: CheckboxChangeEvent, id: number) => {
-    setCheckedItems({
-      ...checkedItems,
-      [id]: event.target.checked
-    });
+    
+    let buf = [...checkedItems];
+    buf.push(id);
+    if(event.target.checked) {
+      setCheckedItems(buf);
+    } else {
+      setCheckedItems(buf.filter(item => item !== id));
+    }
   };
 
   const handleSelectAllChange = (event: CheckboxChangeEvent) => {
-    const isChecked = event.target.checked;
-    setIsSelectAllChecked(isChecked);
-
-    const updatedCheckedItems = Object.keys(checkedItems).reduce(
-      (acc, curr) => {
-        acc[Number.parseInt(curr)] = isChecked;
-        return acc;
-      },
-      {} as { [key: number]: boolean }
-    );
-
-    setCheckedItems(updatedCheckedItems);
+    const checked = event.target.checked;
+    setIsSelectAllChecked(checked);
+    if(checked) {
+      var buf = [];
+      for(let i = 0; i < data.length; i++) buf.push(i);
+      setCheckedItems(buf);
+    } else setCheckedItems([]);
   };
 
   useEffect(() => {
-    const allChecked = Object.values(checkedItems).every((checked) => checked);
-    setIsSelectAllChecked(allChecked);
+    if(checkedItems.length == data.length) setIsSelectAllChecked(true);
+    else setIsSelectAllChecked(false);
   }, [checkedItems]);
 
-  useEffect(() => {
-    if (Object.keys(checkedItems).length === 0) {
-      setIsSelectAllChecked(false);
-    }
-  }, [checkedItems]);
   return (
     <div id="projects-panel" role="tabpanel">
       <table className="w-full border-spacing-0">
@@ -175,13 +177,14 @@ export default function ProjectTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          <tr className="table-row-hover">
+        {data.map((item, index) => (
+          <tr className={index % 2 == 1 ? "table-row-hover bg-yellow-50/50" : "table-row-hover"}>
             <td className="p-4 whitespace-nowrap">
               <input
                 type="checkbox"
                 className="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
-                checked={checkedItems[1] || false}
-                onChange={(e) => handleCheckboxChange(e, 1)}
+                checked={checkedItems.findIndex(item => item === index) > -1}
+                onChange={(e) => handleCheckboxChange(e, index)}
               />
             </td>
             <td className="px-4 py-3 whitespace-nowrap">
@@ -203,11 +206,11 @@ export default function ProjectTable() {
                   </svg>
                 </div>
                 <span className="font-medium text-gray-900">
-                  Website Redesign
+                  {item.package_name}
                 </span>
               </div>
             </td>
-            <td className="px-4 py-3 text-gray-600">TechCorp</td>
+            <td className="px-4 py-3 text-gray-600">{item.client}</td>
             <td className="px-4 py-3">
               <div className="flex -space-x-2">
                 <Image
@@ -225,35 +228,38 @@ export default function ProjectTable() {
                   className="w-6 h-6 rounded-full border-2 border-white"
                 />
                 <div className="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs text-gray-500">
-                  +3
+                  {item.team}
                 </div>
               </div>
             </td>
-            <td className="px-4 py-3 text-gray-600">Dec 24, 2024</td>
+            <td className="px-4 py-3 text-gray-600">{item.deadline}</td>
             <td className="px-4 py-3">
               <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                 <div
                   className="bg-brand-500 h-1.5 rounded-full transition-all duration-500"
                   style={{
-                    width: '75%',
+                    width: `${item.progress}%`,
                     background:
                       'linear-gradient(90deg, rgba(132, 184, 148, 0.8), rgba(132, 184, 148, 1))'
                   }}
                 />
               </div>
-              <div className="text-xs text-gray-500 mt-1">75% Complete</div>
+              <div className="text-xs text-gray-500 mt-1">{item.progress}% Complete</div>
             </td>
             <td className="px-4 py-3">
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-                  In Progress
+                  {item.progress}
                 </span>
               </div>
             </td>
           </tr>
+          ))}
         </tbody>
+        
       </table>
     </div>
   );
 }
+export default ProjectTable;

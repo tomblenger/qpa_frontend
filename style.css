@@ -505,3 +505,27 @@ main {
 .modal-overlay {
     z-index: 40;
 }
+
+.p-checkbox input:checked ~ .p-checkbox-box {
+    background-color: rgb(132, 184, 148) !important; /* Your desired color */
+    border-color: rgb(132, 184, 148) !important; /* Your desired border color */
+}
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr > td {
+    padding: 12px 20px; /* Adjust padding */
+    text-align: center;
+}
+.p-datatable {
+    table-layout: auto; /* Allows for dynamic row height based on content */
+}
+.p-datatable-tbody > tr > td {
+     padding: 10px 20px; /* Set padding for the td elements (top/bottom, left/right) */
+ }
+.p-checkbox-box {
+    width: 18px; /* Adjust the width of the box */
+    height: 18px; /* Adjust the height of the box */
+}
+.custom-modal {
+    background-color: blue; /* Change to desired solid color */
+    opacity: 1 !important; /* Ensures it’s not transparent */
+}

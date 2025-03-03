@@ -38,6 +38,7 @@ export default function Login() {
     try {
       setLoading(true);
       console.log(register);
+      console.log("data", data);
       console.log(process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL);
       const status = await fetch(
         `${process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL}/login`,

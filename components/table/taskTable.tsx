@@ -1,51 +1,51 @@
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
+import {FavouriteTask} from "@/app/admin/dashboard/page";
 
-export default function TaskTable() {
-  const [checkedItems, setCheckedItems] = useState<{ [key: number]: boolean }>(
-    {}
-  );
+interface TaskTableProps {
+  taskData: FavouriteTask[];
+}
+
+const TaskTable:React.FC<TaskTableProps> = ({taskData}) =>  {
+  const [data, setData] = useState<FavouriteTask[]>(taskData);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
-
+  
   interface CheckboxChangeEvent {
     target: {
       checked: boolean;
     };
   }
-
+  
+  useEffect(() => {
+    console.log(checkedItems);
+  }, [checkedItems]);
   const handleCheckboxChange = (event: CheckboxChangeEvent, id: number) => {
-    setCheckedItems({
-      ...checkedItems,
-      [id]: event.target.checked
-    });
-  };
-
-  const handleSelectAllChange = (event: CheckboxChangeEvent) => {
-    const isChecked = event.target.checked;
-    setIsSelectAllChecked(isChecked);
-
-    const updatedCheckedItems = Object.keys(checkedItems).reduce(
-      (acc, curr) => {
-        acc[parseInt(curr)] = isChecked;
-        return acc;
-      },
-      {} as { [key: number]: boolean }
-    );
-
-    setCheckedItems(updatedCheckedItems);
-  };
-
-  useEffect(() => {
-    const allChecked = Object.values(checkedItems).every((checked) => checked);
-    setIsSelectAllChecked(allChecked);
-  }, [checkedItems]);
-
-  useEffect(() => {
-    if (Object.keys(checkedItems).length === 0) {
-      setIsSelectAllChecked(false);
+    
+    let buf = [...checkedItems];
+    buf.push(id);
+    if(event.target.checked) {
+      setCheckedItems(buf);
+    } else {
+      setCheckedItems(buf.filter(item => item !== id));
     }
+  };
+  
+  const handleSelectAllChange = (event: CheckboxChangeEvent) => {
+    const checked = event.target.checked;
+    setIsSelectAllChecked(checked);
+    if(checked) {
+      var buf = [];
+      for(let i = 0; i < data.length; i++) buf.push(i);
+      setCheckedItems(buf);
+    } else setCheckedItems([]);
+  };
+  
+  useEffect(() => {
+    if(checkedItems.length == data.length) setIsSelectAllChecked(true);
+    else setIsSelectAllChecked(false);
   }, [checkedItems]);
-
+  
   return (
     <div id="tasks-panel" role="tabpanel">
       <table className="w-full border-spacing-0">
@@ -170,13 +170,14 @@ export default function TaskTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          <tr className="table-row-hover">
-            <td className="p-4 whitespace-nowrap">
+        {data.map((item, index) => (
+          <tr className={index % 2 == 1 ? "table-row-hover bg-yellow-50/50" : "table-row-hover"}>
+          <td className="p-4 whitespace-nowrap">
               <input
                 type="checkbox"
                 className="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
-                checked={checkedItems[1] || false}
-                onChange={(e) => handleCheckboxChange(e, 1)}
+                checked={checkedItems.findIndex(item => item === index) > -1}
+                onChange={(e) => handleCheckboxChange(e, index)}
               />
             </td>
             <td className="px-4 py-3 whitespace-nowrap">
@@ -193,27 +194,29 @@ export default function TaskTable() {
                   height={32}
                   className="w-6 h-6 rounded-full"
                 />
-                <span className="text-gray-600">Anatoly Belik</span>
+                <span className="text-gray-600">{item.assignee}</span>
               </div>
             </td>
             <td className="px-4 py-3 whitespace-nowrap">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">
-                High
+                {item.priority}
               </span>
             </td>
-            <td className="px-4 py-3 text-gray-600">Nov 30, 2024</td>
-            <td className="px-4 py-3 text-gray-600">Website Redesign</td>
+            <td className="px-4 py-3 text-gray-600">{item.due_date}</td>
+            <td className="px-4 py-3 text-gray-600">{item.project}</td>
             <td className="px-4 py-3">
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">
-                  In Review
+                  {item.status}
                 </span>
               </div>
             </td>
           </tr>
+          ))}
         </tbody>
       </table>
     </div>
   );
 }
+export default TaskTable;

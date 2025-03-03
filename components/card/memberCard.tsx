@@ -1,6 +1,13 @@
+import React, {useState} from 'react';
 import Image from 'next/image';
+import {MemberData} from "@/app/admin/dashboard/page";
 
-export default function MemberCard() {
+interface MemberCardProp {
+  member: MemberData;
+}
+
+const MemberCard: React.FC<MemberCardProp> = ({member}) => {
+  const [memberData, setMemberData] = useState<MemberData>(member);
   return (
     <div
       className="stats-card gradient-border card-shine p-6 rounded-2xl animate-in bg-white"
@@ -25,12 +32,12 @@ export default function MemberCard() {
           </div>
           <div>
             <h3 className="font-medium text-gray-500">Team Members</h3>
-            <div className="text-2xl font-bold text-gray-900">248</div>
+            <div className="text-2xl font-bold text-gray-900">{memberData.total}</div>
           </div>
         </div>
         <div className="flex flex-col items-end">
           <span className="text-blue-500 bg-blue-50 px-3 py-1 rounded-lg text-sm font-medium">
-            +12
+            {memberData.register_week > 0 ? '+' : '-'}{memberData.register_week}
           </span>
           <span className="text-xs text-gray-400 mt-1">this week</span>
         </div>
@@ -60,7 +67,7 @@ export default function MemberCard() {
             className="w-8 h-8 rounded-lg ring-2 ring-white object-cover hover:z-10 transition-all"
           />
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-teal-500 flex items-center justify-center text-xs text-white font-medium ring-2 ring-white hover:z-10 transition-all">
-            +5
+            {memberData.register_now}
           </div>
         </div>
         <button className="text-sm text-brand-500 hover:text-brand-600 font-medium">
@@ -70,3 +77,5 @@ export default function MemberCard() {
     </div>
   );
 }
+
+export default MemberCard;

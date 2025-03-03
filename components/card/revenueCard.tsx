@@ -1,4 +1,13 @@
-export default function RevenueCard() {
+'use client';
+import React, {useState} from 'react';
+import {RevenueData} from "@/app/admin/dashboard/page";
+
+interface RevenueProps {
+  revenue: RevenueData;
+}
+
+const RevenueCard: React.FC<RevenueProps> = ({revenue})=> {
+  const [revenueData, setRevenueData] = useState<RevenueData>(revenue);
   return (
     <div
       className="stats-card gradient-border card-shine p-6 rounded-2xl animate-in bg-white"
@@ -23,12 +32,12 @@ export default function RevenueCard() {
           </div>
           <div>
             <h3 className="font-medium text-gray-500">Total Revenue</h3>
-            <div className="text-2xl font-bold text-gray-900">$24,560</div>
+            <div className="text-2xl font-bold text-gray-900">{revenueData.total}$</div>
           </div>
         </div>
         <div className="flex flex-col items-end">
           <span className="text-brand-500 bg-brand-50 px-3 py-1 rounded-lg text-sm font-medium">
-            +12.5%
+            {revenueData.growth > 0 ? '+' : '-'}{revenueData.growth}%
           </span>
           <span className="text-xs text-gray-400 mt-1">vs last month</span>
         </div>
@@ -36,11 +45,12 @@ export default function RevenueCard() {
       <div className="neon-line my-4"></div>
       <div className="flex items-center justify-between text-sm">
         <span className="text-gray-500">Monthly Goal</span>
-        <span className="text-gray-900 font-medium">$30,000</span>
+        <span className="text-gray-900 font-medium">{revenueData.monthly_goal}$</span>
       </div>
       <div className="progress-bar mt-2">
-        <div className="progress-value" style={{ width: '82%' }}></div>
+        <div className="progress-value" style={{ width: `${revenueData.progress}%` }}></div>
       </div>
     </div>
   );
 }
+export default RevenueCard;

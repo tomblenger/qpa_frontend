@@ -62,7 +62,7 @@ export default function Projects() {
         };
         return temp;
       });
-      // console.log(clientsArray);
+      console.log(clientsArray);
       setClients(clientsArray);
     };
 

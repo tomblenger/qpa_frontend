@@ -1,51 +1,51 @@
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
+import {FavouriteClient} from "@/app/admin/dashboard/page";
 
-export default function ClientTable() {
-  const [checkedItems, setCheckedItems] = useState<{ [key: number]: boolean }>(
-    {}
-  );
+interface ClientTableProps {
+  clientData: FavouriteClient[];
+}
+
+const ClientTable: React.FC<ClientTableProps> = ({clientData})=> {
+  const [data, setData] = useState<FavouriteClient[]>(clientData);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
-
+  
   interface CheckboxChangeEvent {
     target: {
       checked: boolean;
     };
   }
-
+  
+  useEffect(() => {
+    console.log(checkedItems);
+  }, [checkedItems]);
   const handleCheckboxChange = (event: CheckboxChangeEvent, id: number) => {
-    setCheckedItems({
-      ...checkedItems,
-      [id]: event.target.checked
-    });
-  };
-
-  const handleSelectAllChange = (event: CheckboxChangeEvent) => {
-    const isChecked = event.target.checked;
-    setIsSelectAllChecked(isChecked);
-
-    const updatedCheckedItems = Object.keys(checkedItems).reduce(
-      (acc, curr) => {
-        acc[Number.parseInt(curr)] = isChecked;
-        return acc;
-      },
-      {} as { [key: number]: boolean }
-    );
-
-    setCheckedItems(updatedCheckedItems);
-  };
-
-  useEffect(() => {
-    const allChecked = Object.values(checkedItems).every((checked) => checked);
-    setIsSelectAllChecked(allChecked);
-  }, [checkedItems]);
-
-  useEffect(() => {
-    if (Object.keys(checkedItems).length === 0) {
-      setIsSelectAllChecked(false);
+    
+    let buf = [...checkedItems];
+    buf.push(id);
+    if(event.target.checked) {
+      setCheckedItems(buf);
+    } else {
+      setCheckedItems(buf.filter(item => item !== id));
     }
+  };
+  
+  const handleSelectAllChange = (event: CheckboxChangeEvent) => {
+    const checked = event.target.checked;
+    setIsSelectAllChecked(checked);
+    if(checked) {
+      var buf = [];
+      for(let i = 0; i < data.length; i++) buf.push(i);
+      setCheckedItems(buf);
+    } else setCheckedItems([]);
+  };
+  
+  useEffect(() => {
+    if(checkedItems.length == data.length) setIsSelectAllChecked(true);
+    else setIsSelectAllChecked(false);
   }, [checkedItems]);
-
+  
   return (
     <div id="clients-panel" role="tabpanel">
       <table className="w-full border-spacing-0">
@@ -157,22 +157,23 @@ export default function ClientTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          <tr className="table-row-hover">
+        {data.map((item, index) => (
+          <tr className={index % 2 == 1 ? "table-row-hover bg-yellow-50/50" : "table-row-hover"}>
             <td className="p-4 whitespace-nowrap">
               <input
                 type="checkbox"
                 className="w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500"
-                checked={checkedItems[1] || false}
-                onChange={(e) => handleCheckboxChange(e, 1)}
+                checked={checkedItems.findIndex(item => item === index) > -1}
+                onChange={(e) => handleCheckboxChange(e, index)}
               />
             </td>
             <td className="px-4 py-3 whitespace-nowrap">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <span className="text-sm font-medium text-blue-600">TC</span>
+                  <span className="text-sm font-medium text-blue-600">{item.assignee}</span>
                 </div>
                 <span className="font-medium text-gray-900">
-                  TechCorp Industries
+                  {item.title}
                 </span>
               </div>
             </td>
@@ -185,25 +186,27 @@ export default function ClientTable() {
                   height={32}
                   className="w-6 h-6 rounded-full"
                 />
-                <span className="text-gray-600">Sarah Johnson</span>
+                <span className="text-gray-600">{item.name}</span>
               </div>
             </td>
             <td className="px-4 py-3">
-              <span className="text-gray-900 font-medium">3</span>
-              <span className="text-gray-500"> active projects</span>
+              <span className="text-gray-900 font-medium">{item.priority}</span>
+              <span className="text-gray-500">{item.project}</span>
             </td>
-            <td className="px-4 py-3 text-gray-900 font-medium">$45,000</td>
+            <td className="px-4 py-3 text-gray-900 font-medium">${item.total_value}</td>
             <td className="px-4 py-3">
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-                  Active
+                  {item.status}
                 </span>
               </div>
             </td>
           </tr>
+        ))}
         </tbody>
       </table>
     </div>
   );
 }
+export default ClientTable;
