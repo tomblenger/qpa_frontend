@@ -17,12 +17,12 @@ const ProjectTable: React.FC<FavouriteProjectProps> = ({projectData}) => {
       checked: boolean;
     };
   }
-  
+
   useEffect(() => {
     console.log(checkedItems);
   }, [checkedItems]);
   const handleCheckboxChange = (event: CheckboxChangeEvent, id: number) => {
-    
+
     let buf = [...checkedItems];
     buf.push(id);
     if(event.target.checked) {
@@ -178,7 +178,7 @@ const ProjectTable: React.FC<FavouriteProjectProps> = ({projectData}) => {
         </thead>
         <tbody className="divide-y divide-gray-100">
         {data.map((item, index) => (
-          <tr className={index % 2 == 1 ? "table-row-hover bg-yellow-50/50" : "table-row-hover"}>
+          <tr key={index} className={index % 2 == 1 ? "table-row-hover bg-yellow-50/50" : "table-row-hover"}>
             <td className="p-4 whitespace-nowrap">
               <input
                 type="checkbox"
@@ -257,7 +257,7 @@ const ProjectTable: React.FC<FavouriteProjectProps> = ({projectData}) => {
           </tr>
           ))}
         </tbody>
-        
+
       </table>
     </div>
   );

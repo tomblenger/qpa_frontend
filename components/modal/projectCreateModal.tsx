@@ -609,7 +609,7 @@ const ProjectCreateModal: React.FC<ProjectModalProps> = ({
                     }}
                   >
                     <option value={0}>Select Client</option>
-                    {clients.map((item, index) => {
+                    {clients && clients.map((item, index) => {
                       return (
                         <option key={index} value={item.id}>
                           {item.full_name}

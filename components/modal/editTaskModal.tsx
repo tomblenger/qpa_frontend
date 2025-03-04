@@ -33,7 +33,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   flag,
   data
 }) => {
-  const { title } = data;
+  // const { title } = data;
   const [projectID, setProjectID] = useState(0);
   const [taskName, setTaskName] = useState('');
   const [dueDate, setDueDate] = useState('');

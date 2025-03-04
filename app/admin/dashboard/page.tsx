@@ -10,6 +10,15 @@ import EmployeeTable from '@/components/table/employeeTable';
 import ProjectTable from '@/components/table/projectTable';
 import TaskTable from '@/components/table/taskTable';
 import { useEffect, useState } from 'react';
+import {AppDispatch, RootState} from "@/app/admin/reducers/store";
+import {useDispatch, useSelector} from "react-redux";
+import {getOverview, getTableData} from "@/app/admin/reducers/dashboard";
+import ProjectCreateModal from "@/components/modal/projectCreateModal";
+import ProjectDetailModal from "@/components/modal/projectDetailsModal";
+import EditTaskModal from '@/components/modal/editTaskModal';
+
+
+
 
 export interface RevenueData {
   total: number;
@@ -53,15 +62,21 @@ export type ActivityData = {
   year: weekData [];
 }
 
-type DashboardData = {
-  revenue: RevenueData;
-  project: ProjectData;
-  task: TaskData;
-  member: MemberData;
-  activity: ActivityData;
+export type table_employees = {
+  id: number;
+  full_name: string;
+  avatar: string;
+  email: string;
+  country: string;
+  phone: string;
+  role: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  verified: boolean;
 }
 
-export type FavouriteProject = {
+export type table_Project = {
   package_name: string;
   client: string;
   team: string;
@@ -70,20 +85,16 @@ export type FavouriteProject = {
   status: string;
 }
 
-export type FavouriteMember = {
-  full_name: string;
-  site: string;
-  job_title: string;
-  job_description: string;
-  position: string;
-  department: string;
-  site_name: string;
-  salary: string;
-  start_date: string;
-  status: string,
+export type table_task = {
+  title: string;
+  assignee: string;
+  priority: string;
+  due_date: string;
+  project: string;
+  status: string;
 }
 
-export type FavouriteClient = {
+export type table_client = {
   title: string,
   assignee: string,
   name: string;
@@ -94,325 +105,73 @@ export type FavouriteClient = {
   total_value: number;
 }
 
-export type FavouriteTask = {
-  title: string;
-  assignee: string;
-  priority: string;
-  due_date: string;
-  project: string;
-  status: string;
+export type OverviewDataType = {
+  revenue: RevenueData;
+  project: ProjectData;
+  task: TaskData;
+  member: MemberData;
+  activity: ActivityData;
 }
 
+export type TableDataType = {
+  employees?: table_employees[];
+  projects?: table_Project[];
+  tasks?: table_task[];
+  clients?: table_client[];
+}
 
 export default function Dashboard() {
-  
+
   const [index, setIndex] = useState(0);
   const [activityIndex, setActivityIndex] = useState(0);
-  const [dashboardData, setDashboardData] = useState<DashboardData>({
-    revenue: {
-      total: 500000,
-      growth: 12.5,
-      monthly_goal: 600000,
-      progress: 83.3,
-    },
-    project: {
-      total: 120,
-      progress: 75,
-      review: 20,
-      hold: 10,
-      growth: 8.2,
-    },
-    task: {
-      total: 500,
-      pending: 120,
-      ongoing: 200,
-      done: 150,
-      overdue: 30,
-      growth: 6.4,
-    },
-    member: {
-      total: 50,
-      register_week: 5,
-      register_now: 2,
-    },
-    activity: {
-      month: [
-        {name: "Week 1", revenue: 120000, users: 20},
-        {name: "Week 2", revenue: 130000, users: 25},
-        {name: "Week 3", revenue: 110000, users: 18},
-        {name: "Week 4", revenue: 140000, users: 22},
-      ],
-      month_3: [
-        {name: "Jan", revenue: 350000, users: 60},
-        {name: "Feb", revenue: 380000, users: 65},
-        {name: "Mar", revenue: 400000, users: 70},
-      ],
-      year: [
-        {name: "Q1", revenue: 1200000, users: 180},
-        {name: "Q2", revenue: 1300000, users: 190},
-        {name: "Q3", revenue: 1250000, users: 175},
-        {name: "Q4", revenue: 1350000, users: 185},
-      ],
-    },
-  });
-  
-  const [favouriteMember, setFavouriteMember] = useState<FavouriteMember[]>([
-    {
-      full_name: "John Doe",
-      site: "New York",
-      job_title: "Software Engineer",
-      job_description: "Developing and maintaining software solutions.",
-      position: "Lead Developer",
-      department: "Engineering",
-      site_name: "TechCorp Headquarters",
-      salary: "$100,000",
-      start_date: "2020-02-13",
-      status: "Active"
-    },
-    {
-      full_name: "John Doe",
-      site: "New York",
-      job_title: "Software Engineer",
-      job_description: "Developing and maintaining software solutions.",
-      position: "Lead Developer",
-      department: "Engineering",
-      site_name: "TechCorp Headquarters",
-      salary: "$100,000",
-      start_date: "2020-02-13",
-      status: "Active"
-    },
-    {
-      full_name: "John Doe",
-      site: "New York",
-      job_title: "Software Engineer",
-      job_description: "Developing and maintaining software solutions.",
-      position: "Lead Developer",
-      department: "Engineering",
-      site_name: "TechCorp Headquarters",
-      salary: "$100,000",
-      start_date: "2020-02-13",
-      status: "Active"
-    },
-    {
-      full_name: "John Doe",
-      site: "New York",
-      job_title: "Software Engineer",
-      job_description: "Developing and maintaining software solutions.",
-      position: "Lead Developer",
-      department: "Engineering",
-      site_name: "TechCorp Headquarters",
-      salary: "$100,000",
-      start_date: "2020-02-13",
-      status: "Active"
-    },
-  ]);
-  const [favouriteProject, setFavouriteProject] = useState<FavouriteProject[]>([
-    {
-      package_name: "Website Redesign",
-      client: "TechCorp",
-      team: "+3",
-      deadline: "2025-06-30",
-      progress: 75,
-      status: "In Progress",
-    },
-    {
-      package_name: "Mobile App Overhaul",
-      client: "MegaSoft Solutions",
-      team: "+4",
-      deadline: "2025-05-15",
-      progress: 50,
-      status: "In Progress",
-    },
-    {
-      package_name: "E-commerce Website Launch",
-      client: "LuxeHardware",
-      team: "+2",
-      deadline: "2025-04-10",
-      progress: 90,
-      status: "Completed",
-    },
-    {
-      package_name: "Tech Integration Project",
-      client: "RedApp Technologies",
-      team: "+5",
-      deadline: "2025-08-20",
-      progress: 40,
-      status: "Not Started",
-    },
-    {
-      package_name: "Cloud Platform Migration",
-      client: "Titan Industries",
-      team: "+6",
-      deadline: "2025-09-01",
-      progress: 30,
-      status: "In Progress",
-    },
-  ]);
-  const [favouriteTask, setFavouriteTask] = useState<FavouriteTask[]>([
-    {
-      title: "Update User Interface",
-      assignee: "Anatoly Belik",
-      priority: "High",
-      due_date: "Nov 30, 2024",
-      project: "Website Redesign",
-      status: "In Review",
-    },
-    {
-      title: "Fix Login Bug",
-      assignee: "Jenna Lee",
-      priority: "Medium",
-      due_date: "Dec 15, 2024",
-      project: "Mobile App Update",
-      status: "In Progress",
-    },
-    {
-      title: "SEO Optimization",
-      assignee: "David Kline",
-      priority: "Low",
-      due_date: "Jan 5, 2025",
-      project: "E-commerce Website",
-      status: "Not Started",
-    },
-    {
-      title: "Develop API for New Feature",
-      assignee: "Olivia Martin",
-      priority: "High",
-      due_date: "Dec 25, 2024",
-      project: "Tech Integration",
-      status: "In Progress",
-    },
-    {
-      title: "Write Blog Post",
-      assignee: "Liam Turner",
-      priority: "Low",
-      due_date: "Jan 10, 2025",
-      project: "Content Marketing",
-      status: "Completed",
-    },
-  ]);
-  const [favouriteClient, setFavouriteClient] = useState<FavouriteClient[]>([
-    {
-      assignee: "TC",
-      title: "TechCorp Industries",
-      name: "Sarah Johnson",
-      priority: 3,
-      due_date: new Date("2025-06-30"),
-      project: "active projects",
-      status: "active",
-      total_value: 4055,
-    },
-    {
-      assignee: "MS",
-      title: "MegaSoft Solutions",
-      name: "John Doe",
-      priority: 2,
-      due_date: new Date("2025-05-15"),
-      project: "upcoming projects",
-      status: "pending",
-      total_value: 4055,
-    },
-    {
-      assignee: "LH",
-      title: "LuxeHardware",
-      name: "Emily Clark",
-      priority: 1,
-      due_date: new Date("2025-04-22"),
-      project: "new clients",
-      status: "active",
-      total_value: 4055,
-    },
-    {
-      assignee: "RA",
-      title: "RedApp Technologies",
-      name: "Mark Smith",
-      priority: 4,
-      due_date: new Date("2025-08-10"),
-      project: "high priority projects",
-      status: "active",
-      total_value: 4055,
-    },
-    {
-      assignee: "TC",
-      title: "Titan Industries",
-      name: "Rachel Adams",
-      priority: 5,
-      due_date: new Date("2025-07-01"),
-      project: "active projects",
-      status: "completed",
-      total_value: 4055,
-    },
-  ]);
+  const [modal, setModal] = useState<string>('');
+  const [keyword, setKeyword] = useState('');
+  const dispatch: AppDispatch = useDispatch();
+  const dashboard = useSelector((state: RootState) => state.dashboard)
+
 
   useEffect(() => {
-    getDashboardData();
-    getFavouriteProjectData();
-    // getFavouriteTaskData();
-    // getFavouriteEmployeeData();
-    // getFavouriteClientData();
-  }, []);
-  
-  const getDashboardData = async () => {
-    const token = localStorage.getItem('access_token');
-    const status = await fetch(
-      `${process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL}/admin/dashboard`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: `Bearer ${token}`,
-        }
-      }
-    );
-    if(status.status === 200) {
-      const responseData = await status.json();
-      const { dashboardData} = responseData;
-      console.log(dashboardData);
-      if(dashboardData) setDashboardData(dashboardData);
-      alert("success");
-    }
-    else {
-      console.log('Error in getSettings');
-      alert("failed");
-    }
-  }
-  
-  const getFavouriteProjectData = async () => {
-    const token = sessionStorage.getItem('access_token');
-    console.log(token);
-    const status = await fetch(
-      `${process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL}/admin/dashboard`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: `Bearer ${token}`,
-        }
-      }
-    );
-    if(status.status === 200) {
-      const responseData = await status.json();
-      console.log(responseData);
-      const { dashboardData } = responseData;
-      // setDashboardData(dashboardData);
-    }
-    else {
-      console.log('Error in getSettings');
-    }
-  }
-  
+    dispatch(getOverview);
+    dispatch(getTableData);
+  }, [dispatch]);
+
+  useEffect(() => {
+    handleSearch(keyword)
+  }, [keyword]);
+
   const handleIndex = (index: number) => {
     setIndex(index);
   };
+
+  const handleSearch = (search: string) => {
+    setKeyword(search);
+  }
+
+  const handleClick = (index: number) => {
+    if (index === 0) {
+      setModal('employees');
+    } else if (index === 1) {
+      setModal('projects');
+    } else if (index === 2) {
+      setModal('tasks');
+    } else if (index === 3) {
+      setModal('clients');
+    }
+  }
+
+  const Close = () => {
+    setModal(false);
+  }
 
   return (
     <>
       <div className="py-20 pl-64 pr-6 w-screen min-h-screen overflow-x-hidden">
         <div className="space-y-8">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
-            <RevenueCard revenue={dashboardData.revenue} />
-            <ProjectCard project={dashboardData.project}/>
-            <TaskCard task={dashboardData.task}/>
-            <MemberCard member={dashboardData.member}/>
+            <RevenueCard revenue={dashboard.overviewData.revenue} />
+            <ProjectCard project={dashboard.overviewData.project}/>
+            <TaskCard task={dashboard.overviewData.task}/>
+            <MemberCard member={dashboard.overviewData.member}/>
           </div>
 
           <div className="flex flex-col stats-card gradient-border card-shine p-6 rounded-2xl bg-white">
@@ -435,7 +194,7 @@ export default function Dashboard() {
               </select>
             </div>
             <div className="w-100 h-[300]" id="chart">
-              <ActivityChart index={activityIndex} chartData={dashboardData.activity}/>
+              <ActivityChart index={activityIndex} chartData={dashboard.overviewData.activity}/>
             </div>
           </div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8 overflow-x-auto">
@@ -478,6 +237,7 @@ export default function Dashboard() {
                       type="text"
                       placeholder="Search..."
                       className="w-64 h-9 pl-9 pr-4 text-sm bg-gray-50 border-none rounded-lg bg-white/50 border border-gray-100 focus:outline-none focus:ring-4 focus:ring-brand-500/10 transition-all duration-300"
+                      onChange={(e) => {handleSearch(e.target.value)}}
                     />
                     {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
                     <svg
@@ -496,22 +256,31 @@ export default function Dashboard() {
                   </div>
 
                   <button
-                    
-                    className="h-9 px-4 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-green-700 transition-colors">
+                    onClick={() => handleClick(index)}
+                    className="h-9 px-4 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+
                     Add New
+
                   </button>
+                  {
+                    index === 0 && modal === 'employees' ? <></> :
+                      index === 1 && modal === 'projects' ? <ProjectCreateModal closeEvent={Close} /> :
+                        index === 2 && modal === 'tasks' ? <EditTaskModal closeModal={Close} /> :
+                          index === 3 && modal === 'clients' ? <ProjectCreateModal closeEvent={Close} /> : <></>
+                  }
                 </div>
               </div>
             </div>
 
             {index === 0 ? (
-              <EmployeeTable employeeData={favouriteMember}/>
+              <EmployeeTable employeeData={dashboard.tableData.employees ?? []}/>
             ) : index === 1 ? (
-              <ProjectTable projectData={favouriteProject}/>
+              <ProjectTable projectData={dashboard.tableData.projects ?? []}/>
             ) : index === 2 ? (
-              <TaskTable taskData={favouriteTask}/>
+              <TaskTable taskData={dashboard.tableData.tasks ?? []}/>
             ) : index === 3 ? (
-              <ClientTable clientData={favouriteClient}/>
+              <ClientTable clientData={dashboard.tableData.clients ?? []}/>
             ) : (
               <div>&nbsp;</div>
             )}

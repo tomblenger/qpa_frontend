@@ -10,18 +10,18 @@ const TaskTable:React.FC<TaskTableProps> = ({taskData}) =>  {
   const [data, setData] = useState<FavouriteTask[]>(taskData);
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [isSelectAllChecked, setIsSelectAllChecked] = useState(false);
-  
+
   interface CheckboxChangeEvent {
     target: {
       checked: boolean;
     };
   }
-  
+
   useEffect(() => {
     console.log(checkedItems);
   }, [checkedItems]);
   const handleCheckboxChange = (event: CheckboxChangeEvent, id: number) => {
-    
+
     let buf = [...checkedItems];
     buf.push(id);
     if(event.target.checked) {
@@ -30,7 +30,7 @@ const TaskTable:React.FC<TaskTableProps> = ({taskData}) =>  {
       setCheckedItems(buf.filter(item => item !== id));
     }
   };
-  
+
   const handleSelectAllChange = (event: CheckboxChangeEvent) => {
     const checked = event.target.checked;
     setIsSelectAllChecked(checked);
@@ -40,12 +40,12 @@ const TaskTable:React.FC<TaskTableProps> = ({taskData}) =>  {
       setCheckedItems(buf);
     } else setCheckedItems([]);
   };
-  
+
   useEffect(() => {
     if(checkedItems.length == data.length) setIsSelectAllChecked(true);
     else setIsSelectAllChecked(false);
   }, [checkedItems]);
-  
+
   return (
     <div id="tasks-panel" role="tabpanel">
       <table className="w-full border-spacing-0">
@@ -171,7 +171,7 @@ const TaskTable:React.FC<TaskTableProps> = ({taskData}) =>  {
         </thead>
         <tbody className="divide-y divide-gray-100">
         {data.map((item, index) => (
-          <tr className={index % 2 == 1 ? "table-row-hover bg-yellow-50/50" : "table-row-hover"}>
+          <tr key={index} className={index % 2 == 1 ? "table-row-hover bg-yellow-50/50" : "table-row-hover"}>
           <td className="p-4 whitespace-nowrap">
               <input
                 type="checkbox"
