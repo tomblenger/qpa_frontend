@@ -62,7 +62,7 @@ export default function Projects() {
         };
         return temp;
       });
-      console.log(clientsArray);
+      console.log("clientArray", clientsArray);
       setClients(clientsArray);
     };
 
@@ -119,8 +119,6 @@ export default function Projects() {
     return result;
   };
 
-  console.log(projects);
-  console.log(projectCounts);
   const closeNewProjectModal = () => {
     setCreateModal(false);
   };

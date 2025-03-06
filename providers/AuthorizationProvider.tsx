@@ -16,8 +16,14 @@ const AuthorizationProvider = ({ children }: Readonly<{ children: React.ReactNod
 
     useEffect(() => {
         console.log("***********" + pathname);
+        
         const role = localStorage.getItem("role");
-        if(pathname.includes("login") || pathname.includes("register")) return;
+        if(
+          pathname === "/" ||
+          pathname.includes("login") ||
+          pathname.includes("register") ||
+          pathname.includes("opt") ||
+          pathname.includes("forget")) return;
         if (role == "admin") {
             if (!pathname.includes("admin")) {router.back();};
         } else if (role == "client") {

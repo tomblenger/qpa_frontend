@@ -894,7 +894,7 @@ const OnboardingFlow = () => {
               <ChevronRight className="w-5 h-5" />
             </button>
             <p className="text-center text-sm text-gray-500">
-              Estimated time: 5-10 minutes
+              Estimatetimed : 5-10 minutes
             </p>
           </div>
         </div>

@@ -1,0 +1,23 @@
+export const userMockData = {
+  first_name: "King",
+  last_name: "Tiger",
+  full_name: "King Tiger User",
+  sex: "Male",
+  email: "kingtiger0000@admin.com",
+  password: "19981011",
+  phone: "123-456-7890",
+  position: "Software Engineer",
+  avatar: "https://example.com/avatar.jpg",
+  dob: "1990-05-15",
+  address: "123 Main St",
+  city: "Springfield",
+  state: "Illinois",
+  country: "USA",
+  zip_code: "62704",
+  status: "Active",
+  verified: true,
+  role: "admin",
+  created_at: "2024-03-01T10:00:00Z",
+  updated_at: "2024-03-02T12:00:00Z",
+};
+

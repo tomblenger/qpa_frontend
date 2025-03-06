@@ -2,13 +2,13 @@
 
 import MemberCard2, { type Item } from '@/components/card/memberCard2';
 import { useEffect, useState } from 'react';
-// import teamMembers from '@/mockData/teamMembersData';
+import teamMembers from '@/mockData/teamMembersData';
 import AddMemberModal from '@/components/modal/addMemberModal';
 import { TypeTask, TypeUser } from '@/lib/types';
 export default function Team() {
   const [filter, setFilter] = useState(0);
   const [memberModal, setMemberModal] = useState(false);
-  const [teamMembers, setTeamMembers] = useState<Item[]>([]);
+  // const [teamMembers, setTeamMembers] = useState<Item[]>([]);
   const [allMemebers, setAllMembers] = useState(0);
   const [activeMember, setActiveMembers] = useState(0);
   const [adminNumber, setAdminNumbers] = useState(0);
@@ -90,10 +90,10 @@ export default function Team() {
       setActiveMembers(activeCount);
       setManagerNumbers(managerCount);
       setAdminNumbers(adminCount);
-      setTeamMembers(userArray);
+      // setTeamMembers(userArray);
       setMemberNumber(data.length - managerCount - adminCount);
     };
-
+    
     const fetchActiveProjects = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL}/admin/activeProjects`,
@@ -108,6 +108,7 @@ export default function Team() {
       const data = await response.json();
       setActiveProjectsNumber(data);
     };
+    
     const fetchTasksInProgress = async () => {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL}/admin/tasksInProgress`,
@@ -124,8 +125,8 @@ export default function Team() {
     };
 
     fetchUsers();
-    fetchActiveProjects();
-    fetchTasksInProgress();
+    // fetchActiveProjects();
+    // fetchTasksInProgress();
   }, [memberModal]);
 
   return (
@@ -143,7 +144,7 @@ export default function Team() {
           </div>
           {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
           <button
-            data-new-member
+            // data-new-member
             onClick={() => setMemberModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors"
           >
@@ -426,7 +427,13 @@ export default function Team() {
         </div>
       </div>
 
-      {memberModal ? <AddMemberModal closeModal={setMemberModal} /> : <></>}
+      {memberModal ?
+        <AddMemberModal
+          editable={true}
+          visible={memberModal}
+          closeModal={setMemberModal}
+          id={0}
+        /> : <></>}
     </div>
   );
 }

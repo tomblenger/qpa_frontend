@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import AddMemberModal from '@/components/modal/addMemberModal';
 
 export interface Item {
   id: number;
@@ -15,8 +16,9 @@ interface MemberCard2Props {
 }
 
 const MemberCard2: React.FC<MemberCard2Props> = ({ member }) => {
-  const { name, role, status, projects, tasks } = member;
-
+  const { id, name, role, status, projects, tasks } = member;
+  const [memberModal, setMemberModal] = useState(false);
+  console.log(member);
   return (
     <div className="animate-in p-4 border border-gray-100 rounded-xl hover:shadow-lg transition-all bg-white ">
       <div className="flex items-start gap-4">
@@ -59,7 +61,9 @@ const MemberCard2: React.FC<MemberCard2Props> = ({ member }) => {
             </div>
           </div>
           <div className="mt-4 flex items-center justify-between">
-            <button className="text-sm text-brand-500 hover:text-brand-600 font-medium">
+            <button
+              onClick={() => setMemberModal(true)}
+              className="text-sm text-brand-500 hover:text-brand-600 font-medium">
               View Profile
             </button>
             <button className="p-2 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-50">
@@ -80,6 +84,13 @@ const MemberCard2: React.FC<MemberCard2Props> = ({ member }) => {
           </div>
         </div>
       </div>
+      {memberModal ?
+        <AddMemberModal
+        editable={false}
+        visible={memberModal}
+        closeModal={setMemberModal}
+        id={id}
+      />: <></>}
     </div>
   );
 };

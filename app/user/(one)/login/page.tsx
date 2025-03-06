@@ -37,9 +37,6 @@ export default function Login() {
   const onSubmit = async (data: dataType) => {
     try {
       setLoading(true);
-      console.log(register);
-      console.log("data", data);
-      console.log(process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL);
       const status = await fetch(
         `${process.env.NEXT_PUBLIC_PRODUCT_BACKEND_URL}/login`,
         {
@@ -63,6 +60,7 @@ export default function Login() {
           localStorage.setItem('role', role);
           localStorage.setItem('username', username);
           localStorage.setItem('userId', userId);
+          localStorage.setItem('email', data.email);
 
           if (role === 'admin') {
             router.push('/admin/dashboard');

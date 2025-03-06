@@ -40,3 +40,4 @@ export async function fetchTodayTimeTracksForAllUsers() {
   console.log(timeTracks);
   return timeTracks;
 }
+

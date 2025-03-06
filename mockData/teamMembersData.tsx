@@ -1,10 +1,10 @@
-const teamMembers = [
+export const teamMembers = [
   {
     id: 1,
     name: 'Sarah Wilson',
-    role: 'Lead Designer',
+    type: 'Lead Designer',
     status: 'online',
-    type: 'manager',
+    role: 'manager',
     projects: 4,
     tasks: {
       completed: 12,
@@ -14,9 +14,9 @@ const teamMembers = [
   {
     id: 2,
     name: 'Michael Chen',
-    role: 'Frontend Developer',
+    type: 'Frontend Developer',
     status: 'away',
-    type: 'member',
+    role: 'member',
     projects: 3,
     tasks: {
       completed: 8,
@@ -26,9 +26,9 @@ const teamMembers = [
   {
     id: 3,
     name: 'Emily Rodriguez',
-    role: 'Product Manager',
+    type: 'Product Manager',
     status: 'online',
-    type: 'manager',
+    role: 'manager',
     projects: 6,
     tasks: {
       completed: 18,
@@ -38,9 +38,9 @@ const teamMembers = [
   {
     id: 4,
     name: 'Alex Thompson',
-    role: 'Backend Engineer',
+    type: 'Backend Engineer',
     status: 'offline',
-    type: 'member',
+    role: 'member',
     projects: 2,
     tasks: {
       completed: 15,
@@ -50,9 +50,9 @@ const teamMembers = [
   {
     id: 5,
     name: 'Maya Patel',
-    role: 'UX Researcher',
+    type: 'UX Researcher',
     status: 'online',
-    type: 'admin',
+    role: 'admin',
     projects: 5,
     tasks: {
       completed: 9,

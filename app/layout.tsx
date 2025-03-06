@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
+import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'primereact/resources/primereact.css';
 import './globals.css';
 
 import { TimerProvider } from '@/store/timer-context';
 import { TimeTrackProvider } from '@/store/time-track-context';
 import TimeRecordProvider from './Provider';
 import { AuthorizationProvider } from '@/providers/AuthorizationProvider';
+import {PrimeReactProvider} from "primereact/api";
 
 export const metadata: Metadata = {
   title: 'QPA',
@@ -27,7 +32,9 @@ export default function RootLayout({
         {/* <TimeRecordProvider> */}
         {/* <TimerProvider> */}
         <AuthorizationProvider>
+          {/*<PrimeReactProvider>*/}
           {children}
+          {/*</PrimeReactProvider>*/}
         </AuthorizationProvider>
 
 

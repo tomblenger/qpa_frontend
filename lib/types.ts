@@ -3,11 +3,12 @@ export interface TypeUser {
   first_name?: string;
   last_name?: string;
   full_name?: string;
+  sex?: string;
   email?: string;
   password?: string;
   phone?: string;
   position?: string;
-  role?: string;
+  role?: string | number;
   avatar?: string;
   dob?: string;
   address?: string;
@@ -16,6 +17,9 @@ export interface TypeUser {
   country?: string;
   zip_code?: string;
   status?: string;
+  verified?: boolean;
+  created_at?: string;
+  updated_at?: string;
   assignedUserProject?: TypeProject[];
   assignedUserTask?: TypeTask[];
   userTimeTrack?: TypeTimeTrack[];

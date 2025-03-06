@@ -4,11 +4,13 @@ import { fetchTodayTimeTracksForAllUsers } from '@/hooks/api-hooks';
 import type { TypeTimeTrack } from '@/lib/types';
 import { calculateTotalDuration } from '@/lib/utils/date';
 import { isNonEmptyArray } from '@/lib/utils/functions';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import WeekNavigation from "@/components/timer/WeekNavigation";
 import TimerModal from '@/components/modal/timerModal';
+import {AlarmClock} from "lucide-react"
 import CurrentTracks from "@/components/timer/CurrentTracks";
 import StopWatch from "@/components/timer/StopWatch";
+import EditPermissionModal from "@/components/modal/editPermissionModal";
 
 const Timer = () => {
   const [timeTracks, setTimeTracks] = useState<TypeTimeTrack[]>([
@@ -1380,6 +1382,7 @@ const Timer = () => {
 
   const [totalDaily, setTotalDaily] = useState<string>('');
   const [period, setPeriod] = useState<string>('daily');
+  const [createModal, setCreateModal] = useState<boolean>(false);
 
   useEffect(() => {
     const getTimeTracks = async () => {
@@ -1406,14 +1409,12 @@ const Timer = () => {
     );
   }
   
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openTimerModal = () => {
+    setCreateModal(true);
   };
   
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeTimerModal = () => {
+    setCreateModal(false);
   };
   return (
     <div className="pt-20 pl-64 pr-6  min-h-screen w-screen overflow-x-hidden bg-yellow-50 border rounded-xl justify-items-center">
@@ -1461,14 +1462,20 @@ const Timer = () => {
             ))}
         </ul>
       </div>
-      <button
-        className="absolute right-24 bottom-24 p-2 bg-blue-500 text-white"
-        onClick={openModal}
-      >
-        Start Task Timer
+      <button>
+      <AlarmClock size={60} color="green"
+        className="absolute right-24 bottom-24 p-2 text-white"
+        onClick={openTimerModal} />
       </button>
-      
-      <TimerModal isOpen={isModalOpen} closeModal={closeModal} />
+      {createModal?
+      <>
+        <TimerModal id={23} closeEvent={closeTimerModal} />
+        <button
+          id="modalOverlay"
+          className="active modal-overlay fixed w-screen h-screen inset-0 bg-black/50 backdrop-blur-sm z-50"
+          onClick={closeTimerModal}
+        />
+      </>: <></>}
     </div>
   );
 };
